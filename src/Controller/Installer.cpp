@@ -12,20 +12,20 @@ extern int iconOffsetGlobal;
 // Icon index to color label
 static const LPCSTR nameTable[COLOR_ICON_COUNT] =
 {
-	"Red",
-	"Pink",
-	"Purple",
-	"Blue",
-	"Cyan",
-	"Teal",
-	"Green",
-	"Lime",
-	"Yellow",
-	"Orange",
-	"Brown",
-	"Grey",
-	"Blue Grey",
-	"Black",
+	"红色",
+	"粉色",
+	"紫色",
+	"蓝色",
+	"青色",
+	"深青",
+	"绿色",
+	"黄绿",
+	"黄色",
+	"橙色",
+	"棕色",
+	"灰色",
+	"灰蓝",
+	"黑色",
 };
 
 
@@ -82,7 +82,7 @@ static void InstallRegistry()
 		WRITE_STRING(_key, "", buffer, (len + 1))
 
 	// Root command entry
-	WRITE_LITERAL(rootKey, "MUIVerb", "Color Folder");
+	WRITE_LITERAL(rootKey, "MUIVerb", "着色");
 	WRITE_LITERAL(rootKey, "SubCommands", "");
 	len = sprintf_s(buffer, sizeof(buffer), "%s" TARGET_NAME, srcPath);
 	WRITE_STRING(rootKey, "Icon", buffer, (len + 1));
@@ -124,7 +124,7 @@ static void InstallRegistry()
 		#define DEFAULT_FOLDER_ICON_GROUP "%SystemRoot%\\system32\\shell32.dll,4"
 		WRITE_STRING(numberKey, "Icon", DEFAULT_FOLDER_ICON_GROUP, sizeof(DEFAULT_FOLDER_ICON_GROUP));
 		#undef DEFAULT_FOLDER_ICON_GROUP
-		WRITE_LITERAL(numberKey, "MUIVerb", "Restore Default");
+		WRITE_LITERAL(numberKey, "MUIVerb", "复原");
 		// Line separator
 		WRITE_DWORD(numberKey, "CommandFlags", 0x20);
 			// ---------------------------------------------------------------------------
@@ -144,7 +144,7 @@ static void InstallRegistry()
 		CREATE_KEY(shellKey, "15", numberKey);
 		len = sprintf_s(buffer, sizeof(buffer), "%s" TARGET_NAME, srcPath);
 		WRITE_STRING(numberKey, "Icon", buffer, (len + 1));
-		WRITE_LITERAL(numberKey, "MUIVerb", "Launch Folcolor");
+		WRITE_LITERAL(numberKey, "MUIVerb", "卸载");
 		// Add UAC overlay to the icon to reflect needing administrator elevation
 		WRITE_LITERAL(numberKey, "HasLUAShield", "");
 		// Line separator
@@ -171,9 +171,54 @@ static void InstallRegistry()
 }
 
 
+#include <windows.h>
+#include <shellapi.h>
+
+#pragma comment(lib, "shell32.lib")
+
+BOOL IsRunAsAdmin() {
+    BOOL isAdmin = FALSE;
+    PSID adminGroup = NULL;
+
+    // 创建管理员组的 SID
+    SID_IDENTIFIER_AUTHORITY ntAuthority = SECURITY_NT_AUTHORITY;
+    if (AllocateAndInitializeSid(&ntAuthority, 2,
+        SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
+        0, 0, 0, 0, 0, 0, &adminGroup)) {
+        
+        // 检查令牌是否包含管理员组
+        if (!CheckTokenMembership(NULL, adminGroup, &isAdmin)) {
+            isAdmin = FALSE;
+        }
+        FreeSid(adminGroup);
+    }
+    return isAdmin;
+}
+
+void RequestAdminPrivileges() {
+    if (!IsRunAsAdmin()) {
+        wchar_t exePath[MAX_PATH];
+        GetModuleFileNameW(NULL, exePath, MAX_PATH);
+
+        // 使用 ShellExecute 以管理员权限重启进程
+        SHELLEXECUTEINFOW sei = { sizeof(sei) };
+        sei.lpVerb = L"runas";
+        sei.lpFile = exePath;
+        sei.hwnd = NULL;
+        sei.nShow = SW_NORMAL;
+
+        if (ShellExecuteExW(&sei)) {
+            exit(0); // 退出当前非管理员进程
+        }
+    }
+}
+
+
 // Install ourself
-void Install()
-{
+void Install(){
+	// ------------------------------------------------------------------------
+	RequestAdminPrivileges();
+
 	// Create installation folder
 	if (!CreateDirectoryW(myPathGlobal, NULL))
 		CRITICAL_API_FAIL(CreateDirectoryW, GetLastError());
@@ -189,30 +234,10 @@ void Install()
 		CRITICAL_API_FAIL(GetModuleBaseNameW, GetLastError());
 	WCHAR targetPath[MAX_PATH];
 	if(_snwprintf_s(targetPath, _countof(targetPath), _countof(targetPath)-1, L"%s%s", myPathGlobal, myName) < 1)
-		CRITICAL("Path size limit error!");
+		CRITICAL("路径长度错误!");
 
 	if(!CopyFileW(myPath, targetPath, FALSE))
 		CRITICAL_API_FAIL(CopyFileW, GetLastError());
-	// ------------------------------------------------------------------------
-
-	// And "README.md" file if it exists
-	// #TODO: Could have README.md as an embedded resource and extract it on demand
-	if (PathRemoveFileSpecW(myPath))
-	{
-		if (wcscat_s(myPath, _countof(myPath), L"\\README.md") != 0)
-			CRITICAL("Path size limit error!");
-
-		if (_snwprintf_s(targetPath, _countof(targetPath), _countof(targetPath)-1, L"%sREADME.md", myPathGlobal) < 1)
-			CRITICAL("Path size limit error!");
-
-		CopyFileW(myPath, targetPath, FALSE);
-	}
-
-	// ------------------------------------------------------------------------
-
-	// TODO: Put UAC trick stuff here
-
-
 	// ------------------------------------------------------------------------
 
 	InstallRegistry();
@@ -224,15 +249,15 @@ void Install()
 
 // Uninstall ourself
 // Returns 0 = Needs manual uninstall step, 1 = complete
-int Uninstall()
-{
+int Uninstall() {
+	RequestAdminPrivileges();
+
 	// Remove our registry key
 	DeleteRegistryPath(HKEY_CLASSES_ROOT, REGISTRY_PATH);
 	ResetWindowsIconCache();
 
 	// Double check the path to avoid a disaster
-	if (wcsstr(myPathGlobal, INSTALL_FOLDER))
-	{
+	if (wcsstr(myPathGlobal, INSTALL_FOLDER)) {
 		// Copy of our path without ending backslash and to be double terminated
 		WCHAR myPathCopy[MAX_PATH + 1];
 		ZeroMemory(myPathCopy, sizeof(myPathCopy));
