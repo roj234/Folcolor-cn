@@ -199,7 +199,7 @@ void RequestAdminPrivileges() {
     if (!IsRunAsAdmin()) {
         wchar_t exePath[MAX_PATH];
         GetModuleFileNameW(NULL, exePath, MAX_PATH);
-        wstrcat(exePath, L" -x");
+        wcscat(exePath, L" -x");
 
         // 使用 ShellExecute 以管理员权限重启进程
         SHELLEXECUTEINFOW sei = { sizeof(sei) };
