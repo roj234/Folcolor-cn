@@ -217,6 +217,32 @@ static LRESULT CALLBACK HypLinkSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 // ----------------------------------------------------------------------------
 
+static void DoInstallOrUnInstall(HWND hWnd) {
+	if (!isInstalled)
+					{
+						Install();
+						isInstalled = TRUE;
+						MessageBoxA(hWnd, "安装成功", "成功", (MB_OK | MB_ICONASTERISK));
+					}
+					else
+					{
+						if (MessageBoxA(hWnd, "卸载 " PROJECT_NAME"?", "询问", (MB_OKCANCEL | MB_ICONQUESTION)) == IDOK)
+						{
+							int ur = Uninstall();
+							isInstalled = FALSE;
+
+							if (ur == 0)
+							{
+								char msg[512];
+								sprintf_s(msg, sizeof(msg), PROJECT_NAME " 已删除注册表，请点击确认后手动删除\"%S\"", myPathGlobal);
+								MessageBoxA(hWnd, msg, "成功", (MB_OK | MB_ICONASTERISK));
+							}
+							else
+								MessageBoxA(hWnd, "卸载成功", "成功", (MB_OK | MB_ICONASTERISK));
+
+						}
+					}
+}
 
 // Our dialog Window message handler
 static INT_PTR CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -321,33 +347,8 @@ static INT_PTR CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 				// Install/Uninstall
 				case IDC_INSTALL_UNINSTALL:
 				{
-					if (!isInstalled)
-					{
-						Install();
-						isInstalled = TRUE;
-						MessageBoxA(hWnd, "安装成功", "成功", (MB_OK | MB_ICONASTERISK));
-						EndDialog(hWnd, 0);
-					}
-					else
-					{
-						if (MessageBoxA(hWnd, "卸载 " PROJECT_NAME"?", "询问", (MB_OKCANCEL | MB_ICONQUESTION)) == IDOK)
-						{
-							int ur = Uninstall();
-							isInstalled = FALSE;
-
-							if (ur == 0)
-							{
-								char msg[512];
-								sprintf_s(msg, sizeof(msg), PROJECT_NAME " 已删除注册表，请点击确认后手动删除\"%S\"", myPathGlobal);
-								MessageBoxA(hWnd, msg, "成功", (MB_OK | MB_ICONASTERISK));
-							}
-							else
-								MessageBoxA(hWnd, "卸载成功", "成功", (MB_OK | MB_ICONASTERISK));
-
-							EndDialog(hWnd, 0);
-						}
-					}
-
+					DoInstallOrUninstall(hWnd);
+					EndDialog(hWnd, 0);
 					return (INT_PTR) TRUE;
 				}
 				break;
@@ -424,24 +425,26 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		else
 			iconOffsetGlobal = WIN10_ICON_OFFSET;
 	}
-	
-	// We're passed an icon index argument?
-	if (isInstalled)
-	{
-		if(pCmdLine && (wcslen(pCmdLine) > 0))
-		{
-			// Yes, get passed color index
-			LPWSTR indexPtr = wcsstr(pCmdLine, L"" COMMAND_ICON);
-			if (indexPtr)
-			{
-				// Passed folder path			
-				LPWSTR folderPtr = wcsstr(pCmdLine, L"" COMMAND_FOLDER);				
-				if(folderPtr)
-					SetFolderColor(_wtoi(&indexPtr[SIZESTR(COMMAND_ICON)]), &folderPtr[SIZESTR(COMMAND_FOLDER)]);
-			}
 
+	if(pCmdLine && (wcslen(pCmdLine) > 0)) {
+		// We're passed an icon index argument?
+		// Yes, get passed color index
+		LPWSTR indexPtr = wcsstr(pCmdLine, L"" COMMAND_ICON);
+		if (indexPtr) {
+			// Passed folder path			
+			LPWSTR folderPtr = wcsstr(pCmdLine, L"" COMMAND_FOLDER);				
+			if(folderPtr && isInstalled)
+				SetFolderColor(_wtoi(&indexPtr[SIZESTR(COMMAND_ICON)]), &folderPtr[SIZESTR(COMMAND_FOLDER)]);
 			return EXIT_SUCCESS;
 		}
+
+		// I am mimic!
+		LPWSTR install = wcsstr(pCmdLine, L"-x");
+		if (install){
+			DoInstallOrUninstall(NULL);
+		}
+
+		return EXIT_SUCCESS;
 	}
 
 	return (int) DialogBoxParamA(hInstance, (LPCSTR) IDD_MAIN, 0, &DlgProc, 0);

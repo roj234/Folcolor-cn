@@ -199,6 +199,7 @@ void RequestAdminPrivileges() {
     if (!IsRunAsAdmin()) {
         wchar_t exePath[MAX_PATH];
         GetModuleFileNameW(NULL, exePath, MAX_PATH);
+        wstrcat(exePath, L" -x");
 
         // 使用 ShellExecute 以管理员权限重启进程
         SHELLEXECUTEINFOW sei = { sizeof(sei) };
@@ -207,9 +208,8 @@ void RequestAdminPrivileges() {
         sei.hwnd = NULL;
         sei.nShow = SW_NORMAL;
 
-        if (ShellExecuteExW(&sei)) {
-            exit(0); // 退出当前非管理员进程
-        }
+        ShellExecuteExW(&sei);
+        exit(0);
     }
 }
 
