@@ -226,7 +226,7 @@ static INT_PTR CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		case WM_INITDIALOG:
 		{
 			// Add info to caption
-			SetWindowTextA(hWnd, PROJECT_NAME " " APP_VERSION " (æ±‰åŒ–ç‰ˆ) " __DATE__ "æ„å»º");
+			SetWindowTextA(hWnd, PROJECT_NAME " " APP_VERSION " (ºº»¯°æ) " __DATE__ "¹¹½¨");
 
 			// Set dialog icon
 			HICON hIcon = LoadIconA((HINSTANCE) GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_APP));
@@ -308,7 +308,7 @@ static INT_PTR CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			}
 
 			if (isInstalled)
-				SetDlgItemTextA(hWnd, IDC_INSTALL_UNINSTALL, "å¸è½½");
+				SetDlgItemTextA(hWnd, IDC_INSTALL_UNINSTALL, "Ğ¶ÔØ");
 
 			return (INT_PTR) TRUE;
 		}
@@ -325,12 +325,12 @@ static INT_PTR CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					{
 						Install();
 						isInstalled = TRUE;
-						MessageBoxA(hWnd, "å®‰è£…æˆåŠŸ", "æˆåŠŸ", (MB_OK | MB_ICONASTERISK));
+						MessageBoxA(hWnd, "°²×°³É¹¦", "³É¹¦", (MB_OK | MB_ICONASTERISK));
 						EndDialog(hWnd, 0);
 					}
 					else
 					{
-						if (MessageBoxA(hWnd, "å¸è½½ " PROJECT_NAME"?", "è¯¢é—®", (MB_OKCANCEL | MB_ICONQUESTION)) == IDOK)
+						if (MessageBoxA(hWnd, "Ğ¶ÔØ " PROJECT_NAME"?", "Ñ¯ÎÊ", (MB_OKCANCEL | MB_ICONQUESTION)) == IDOK)
 						{
 							int ur = Uninstall();
 							isInstalled = FALSE;
@@ -338,11 +338,11 @@ static INT_PTR CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 							if (ur == 0)
 							{
 								char msg[512];
-								sprintf_s(msg, sizeof(msg), PROJECT_NAME " å·²åˆ é™¤æ³¨å†Œè¡¨ï¼Œè¯·ç‚¹å‡»ç¡®è®¤åæ‰‹åŠ¨åˆ é™¤\"%S\"", myPathGlobal);
-								MessageBoxA(hWnd, msg, "æˆåŠŸ", (MB_OK | MB_ICONASTERISK));
+								sprintf_s(msg, sizeof(msg), PROJECT_NAME " ÒÑÉ¾³ı×¢²á±í£¬Çëµã»÷È·ÈÏºóÊÖ¶¯É¾³ı\"%S\"", myPathGlobal);
+								MessageBoxA(hWnd, msg, "³É¹¦", (MB_OK | MB_ICONASTERISK));
 							}
 							else
-								MessageBoxA(hWnd, "å¸è½½æˆåŠŸ", "æˆåŠŸ", (MB_OK | MB_ICONASTERISK));
+								MessageBoxA(hWnd, "Ğ¶ÔØ³É¹¦", "³É¹¦", (MB_OK | MB_ICONASTERISK));
 
 							EndDialog(hWnd, 0);
 						}
@@ -405,7 +405,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	if (FAILED(hr))
 		CRITICAL_API_FAIL(SHGetSpecialFolderPathW, HRESULT_CODE(hr));
 	if (wcscat_s(myPathGlobal, _countof(myPathGlobal), L"\\" INSTALL_FOLDER L"\\") != 0)
-		CRITICAL("è·¯å¾„é•¿åº¦é”™è¯¯!");
+		CRITICAL("Â·¾¶³¤¶È´íÎó!");
 
 	// We're installed?
 	// Have registry?

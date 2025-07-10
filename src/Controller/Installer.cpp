@@ -12,20 +12,20 @@ extern int iconOffsetGlobal;
 // Icon index to color label
 static const LPCSTR nameTable[COLOR_ICON_COUNT] =
 {
-	"çº¢è‰²",
-	"ç²‰è‰²",
-	"ç´«è‰²",
-	"è“è‰²",
-	"é’è‰²",
-	"æ·±é’",
-	"ç»¿è‰²",
-	"é»„ç»¿",
-	"é»„è‰²",
-	"æ©™è‰²",
-	"æ£•è‰²",
-	"ç°è‰²",
-	"ç°è“",
-	"é»‘è‰²",
+	"ºìÉ«",
+	"·ÛÉ«",
+	"×ÏÉ«",
+	"À¶É«",
+	"ÇàÉ«",
+	"ÉîÇà",
+	"ÂÌÉ«",
+	"»ÆÂÌ",
+	"»ÆÉ«",
+	"³ÈÉ«",
+	"×ØÉ«",
+	"»ÒÉ«",
+	"»ÒÀ¶",
+	"ºÚÉ«",
 };
 
 
@@ -82,7 +82,7 @@ static void InstallRegistry()
 		WRITE_STRING(_key, "", buffer, (len + 1))
 
 	// Root command entry
-	WRITE_LITERAL(rootKey, "MUIVerb", "ç€è‰²");
+	WRITE_LITERAL(rootKey, "MUIVerb", "×ÅÉ«");
 	WRITE_LITERAL(rootKey, "SubCommands", "");
 	len = sprintf_s(buffer, sizeof(buffer), "%s" TARGET_NAME, srcPath);
 	WRITE_STRING(rootKey, "Icon", buffer, (len + 1));
@@ -124,7 +124,7 @@ static void InstallRegistry()
 		#define DEFAULT_FOLDER_ICON_GROUP "%SystemRoot%\\system32\\shell32.dll,4"
 		WRITE_STRING(numberKey, "Icon", DEFAULT_FOLDER_ICON_GROUP, sizeof(DEFAULT_FOLDER_ICON_GROUP));
 		#undef DEFAULT_FOLDER_ICON_GROUP
-		WRITE_LITERAL(numberKey, "MUIVerb", "å¤åŸ");
+		WRITE_LITERAL(numberKey, "MUIVerb", "¸´Ô­");
 		// Line separator
 		WRITE_DWORD(numberKey, "CommandFlags", 0x20);
 			// ---------------------------------------------------------------------------
@@ -144,7 +144,7 @@ static void InstallRegistry()
 		CREATE_KEY(shellKey, "15", numberKey);
 		len = sprintf_s(buffer, sizeof(buffer), "%s" TARGET_NAME, srcPath);
 		WRITE_STRING(numberKey, "Icon", buffer, (len + 1));
-		WRITE_LITERAL(numberKey, "MUIVerb", "å¸è½½");
+		WRITE_LITERAL(numberKey, "MUIVerb", "Ğ¶ÔØ");
 		// Add UAC overlay to the icon to reflect needing administrator elevation
 		WRITE_LITERAL(numberKey, "HasLUAShield", "");
 		// Line separator
@@ -180,13 +180,13 @@ BOOL IsRunAsAdmin() {
     BOOL isAdmin = FALSE;
     PSID adminGroup = NULL;
 
-    // åˆ›å»ºç®¡ç†å‘˜ç»„çš„ SID
+    // ´´½¨¹ÜÀíÔ±×éµÄ SID
     SID_IDENTIFIER_AUTHORITY ntAuthority = SECURITY_NT_AUTHORITY;
     if (AllocateAndInitializeSid(&ntAuthority, 2,
         SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
         0, 0, 0, 0, 0, 0, &adminGroup)) {
         
-        // æ£€æŸ¥ä»¤ç‰Œæ˜¯å¦åŒ…å«ç®¡ç†å‘˜ç»„
+        // ¼ì²éÁîÅÆÊÇ·ñ°üº¬¹ÜÀíÔ±×é
         if (!CheckTokenMembership(NULL, adminGroup, &isAdmin)) {
             isAdmin = FALSE;
         }
@@ -200,7 +200,7 @@ void RequestAdminPrivileges() {
         wchar_t exePath[MAX_PATH];
         GetModuleFileNameW(NULL, exePath, MAX_PATH);
 
-        // ä½¿ç”¨ ShellExecute ä»¥ç®¡ç†å‘˜æƒé™é‡å¯è¿›ç¨‹
+        // Ê¹ÓÃ ShellExecute ÒÔ¹ÜÀíÔ±È¨ÏŞÖØÆô½ø³Ì
         SHELLEXECUTEINFOW sei = { sizeof(sei) };
         sei.lpVerb = L"runas";
         sei.lpFile = exePath;
@@ -208,7 +208,7 @@ void RequestAdminPrivileges() {
         sei.nShow = SW_NORMAL;
 
         if (ShellExecuteExW(&sei)) {
-            exit(0); // é€€å‡ºå½“å‰éç®¡ç†å‘˜è¿›ç¨‹
+            exit(0); // ÍË³öµ±Ç°·Ç¹ÜÀíÔ±½ø³Ì
         }
     }
 }
@@ -234,7 +234,7 @@ void Install(){
 		CRITICAL_API_FAIL(GetModuleBaseNameW, GetLastError());
 	WCHAR targetPath[MAX_PATH];
 	if(_snwprintf_s(targetPath, _countof(targetPath), _countof(targetPath)-1, L"%s%s", myPathGlobal, myName) < 1)
-		CRITICAL("è·¯å¾„é•¿åº¦é”™è¯¯!");
+		CRITICAL("Â·¾¶³¤¶È´íÎó!");
 
 	if(!CopyFileW(myPath, targetPath, FALSE))
 		CRITICAL_API_FAIL(CopyFileW, GetLastError());

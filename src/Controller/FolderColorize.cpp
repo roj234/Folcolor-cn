@@ -126,7 +126,7 @@ void SetFolderColor(int index, LPWSTR folderPath)
 	// Path to a "desktop.ini"
 	WCHAR initPath[MAX_PATH];
 	if (_snwprintf_s(initPath, MAX_PATH, (MAX_PATH-1), L"%s\\desktop.ini", folderPath) < 1)
-		CRITICAL("è·¯å¾„é•¿åº¦é”™è¯¯!");
+		CRITICAL("Â·¾¶³¤¶È´íÎó!");
 
 	// Folder already has system flag?
 	BOOL hasIniAlready = FALSE;
@@ -157,9 +157,9 @@ void SetFolderColor(int index, LPWSTR folderPath)
 				{
 					// Yes, abort
 					MessageBoxA(NULL,
-						PROJECT_NAME " æ£€æµ‹åˆ°è¿™ä¸ªæ–‡ä»¶å¤¹å·²ç»å­˜åœ¨ desktop.ini (éšè—|ç³»ç»Ÿ) åŽŸä½œè€…æ‡’å¾—åŠ¨ï¼Œæˆ‘ä¹Ÿæ‡’å¾—åŠ¨ã€‚\nå¦‚æžœä½ ç¡®å®žæƒ³æ”¹ï¼Œè¯·åˆ æŽ‰å®ƒï¼ˆå¦‚æžœä½ ä¸çŸ¥é“å¦‚ä½•åˆ é™¤ï¼Œé‚£ä¹ˆä½ æœ€å¥½ä¸è¦æ”¹è¿™ä¸ªæ–‡ä»¶å¤¹çš„å›¾æ ‡ï¼‰\nåˆ é™¤å‰è¯·å¤‡ä»½ä¾¿äºŽä»¥åŽæ¢å¤"
+						PROJECT_NAME " ¼ì²âµ½Õâ¸öÎÄ¼þ¼ÐÒÑ¾­´æÔÚ desktop.ini (Òþ²Ø|ÏµÍ³) Ô­×÷ÕßÀÁµÃ¶¯£¬ÎÒÒ²ÀÁµÃ¶¯¡£\nÈç¹ûÄãÈ·ÊµÏë¸Ä£¬ÇëÉ¾µôËü£¨Èç¹ûÄã²»ÖªµÀÈçºÎÉ¾³ý£¬ÄÇÃ´Äã×îºÃ²»Òª¸ÄÕâ¸öÎÄ¼þ¼ÐµÄÍ¼±ê£©\nÉ¾³ýÇ°Çë±¸·Ý±ãÓÚÒÔºó»Ö¸´"
 						,
-						"é”™è¯¯", (MB_OK | MB_ICONERROR));
+						"´íÎó", (MB_OK | MB_ICONERROR));
 					return;
 				}
 			}
