@@ -226,7 +226,7 @@ static INT_PTR CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 		case WM_INITDIALOG:
 		{
 			// Add info to caption
-			SetWindowTextA(hWnd, PROJECT_NAME " " APP_VERSION " Built: " __DATE__);
+			SetWindowTextA(hWnd, PROJECT_NAME " " APP_VERSION " (汉化版) " __DATE__ "构建");
 
 			// Set dialog icon
 			HICON hIcon = LoadIconA((HINSTANCE) GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_APP));
@@ -308,7 +308,7 @@ static INT_PTR CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 			}
 
 			if (isInstalled)
-				SetDlgItemTextA(hWnd, IDC_INSTALL_UNINSTALL, "Uninstall");
+				SetDlgItemTextA(hWnd, IDC_INSTALL_UNINSTALL, "卸载");
 
 			return (INT_PTR) TRUE;
 		}
@@ -325,26 +325,24 @@ static INT_PTR CALLBACK DlgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 					{
 						Install();
 						isInstalled = TRUE;
-						SetDlgItemTextA(hWnd, IDC_INSTALL_UNINSTALL, "Uninstall");
-						MessageBoxA(hWnd, "Installation complete.", "Completion:", (MB_OK | MB_ICONASTERISK));
+						MessageBoxA(hWnd, "安装成功", "成功", (MB_OK | MB_ICONASTERISK));
 						EndDialog(hWnd, 0);
 					}
 					else
 					{
-						if (MessageBoxA(hWnd, "Uninstall " PROJECT_NAME"?", "Confirmation:", (MB_OKCANCEL | MB_ICONQUESTION)) == IDOK)
+						if (MessageBoxA(hWnd, "卸载 " PROJECT_NAME"?", "询问", (MB_OKCANCEL | MB_ICONQUESTION)) == IDOK)
 						{
 							int ur = Uninstall();
 							isInstalled = FALSE;
-							SetDlgItemTextA(hWnd, IDC_INSTALL_UNINSTALL, "Install");
 
 							if (ur == 0)
 							{
 								char msg[512];
-								sprintf_s(msg, sizeof(msg), PROJECT_NAME " registry uninstalled, but to complete the uninstallation manually delete the\n\"%S\"\nfolder after this dialog closes.", myPathGlobal);
-								MessageBoxA(hWnd, msg, "Completion:", (MB_OK | MB_ICONASTERISK));
+								sprintf_s(msg, sizeof(msg), PROJECT_NAME " 已删除注册表，请点击确认后手动删除\"%S\"", myPathGlobal);
+								MessageBoxA(hWnd, msg, "成功", (MB_OK | MB_ICONASTERISK));
 							}
 							else
-								MessageBoxA(hWnd, PROJECT_NAME " uninstalled.", "Completion:", (MB_OK | MB_ICONASTERISK));
+								MessageBoxA(hWnd, "卸载成功", "成功", (MB_OK | MB_ICONASTERISK));
 
 							EndDialog(hWnd, 0);
 						}
@@ -407,7 +405,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	if (FAILED(hr))
 		CRITICAL_API_FAIL(SHGetSpecialFolderPathW, HRESULT_CODE(hr));
 	if (wcscat_s(myPathGlobal, _countof(myPathGlobal), L"\\" INSTALL_FOLDER L"\\") != 0)
-		CRITICAL("Path size limit error!");
+		CRITICAL("路径长度错误!");
 
 	// We're installed?
 	// Have registry?
