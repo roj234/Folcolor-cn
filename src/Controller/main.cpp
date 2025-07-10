@@ -217,7 +217,7 @@ static LRESULT CALLBACK HypLinkSubclass(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 // ----------------------------------------------------------------------------
 
-static void DoInstallOrUnInstall(HWND hWnd) {
+static void DoInstallOrUninstall(HWND hWnd) {
 	if (!isInstalled)
 					{
 						Install();
