@@ -126,7 +126,7 @@ void SetFolderColor(int index, LPWSTR folderPath)
 	// Path to a "desktop.ini"
 	WCHAR initPath[MAX_PATH];
 	if (_snwprintf_s(initPath, MAX_PATH, (MAX_PATH-1), L"%s\\desktop.ini", folderPath) < 1)
-		CRITICAL("Path size limit error!");
+		CRITICAL("路径长度错误!");
 
 	// Folder already has system flag?
 	BOOL hasIniAlready = FALSE;
@@ -157,11 +157,9 @@ void SetFolderColor(int index, LPWSTR folderPath)
 				{
 					// Yes, abort
 					MessageBoxA(NULL,
-						PROJECT_NAME " detects this as possibly a special folder (I.E. \"Downloads\", \"Documents\", \"Music\", etc.) and is not supported since restoring them is complex.\n\n"
-						"If you really want to set the color/icon for this folder, manually edit or just delete the existing \"desktop.ini\" (hidden, system) file first.\n"
-						"And then if you want to restore a special system folder icon later, it CAN be done through manual restore steps (Web search on how).\n"
+						PROJECT_NAME " 检测到这个文件夹已经存在 desktop.ini (隐藏|系统) 原作者懒得动，我也懒得动。\n如果你确实想改，请删掉它（如果你不知道如何删除，那么你最好不要改这个文件夹的图标）\n删除前请备份便于以后恢复"
 						,
-						PROJECT_NAME " abort:", (MB_OK | MB_ICONERROR));
+						"错误", (MB_OK | MB_ICONERROR));
 					return;
 				}
 			}
